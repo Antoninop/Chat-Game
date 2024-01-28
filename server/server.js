@@ -29,7 +29,6 @@ io.on('connection', (socket) => {
             console.log('Victoire');
             io.emit('Victoire', msg);
         }
-
     });
 
     socket.on('disconnect', () => {
