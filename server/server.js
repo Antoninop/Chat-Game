@@ -13,24 +13,19 @@ app.use(express.static(publicPath));
 let player1 = null;
 let player2 = null;
 
-
 const motsFrancais = ['chocolat', 'croissant', 'baguette', 'fromage', 'escargot', 'camembert', 'macaron', 'crepe', 'vin', 'boulangerie'];
 const motPartie = choisirMotFrancais();
 function choisirMotFrancais() {
     return motsFrancais[Math.floor(Math.random() * motsFrancais.length)];
 }
 
-
-
 io.on('connection', (socket) => {
     console.log('Un utilisateur est connecté');
-    
-
     socket.on('chat message', (msg) => {
         console.log('Message reçu : ' + msg);
         io.emit('chat message', msg); 
 
-        if (msg.split(' ')[1].toLowerCase() === motPartie) {
+        if (msg.split(' ')[1].toLowerCase() === motPartie && msg.split(' ')[0] === 'player2') {
             console.log('Victoire');
             io.emit('Victoire', msg);
         }
@@ -48,7 +43,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    
     if (!player1) {
         player1 = socket;
         console.log('Joueur 1 assigné');
