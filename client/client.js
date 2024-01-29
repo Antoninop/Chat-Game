@@ -4,15 +4,16 @@ const chatInput = document.getElementById('chat-input');
 const playerStatus = document.getElementById('player-status');
 
 let player;
+let word; 
 
 socket.on('player', (receivedPlayer) => {
-    console.log('Vous êtes le joueur :', receivedPlayer);
     if (receivedPlayer === 'player1' || receivedPlayer === 'player2') {
         player = receivedPlayer;
         playerStatus.textContent = `Joueur ${player.charAt(player.length - 1)}`;
 
         if (receivedPlayer === 'player1') {
-            socket.on('word', (word) => {
+            socket.on('word', (receivedWord) => { 
+                word = receivedWord; 
                 playerStatus.textContent = 'Mot à faire deviner : ' + word;
             });
         }
@@ -29,18 +30,21 @@ socket.on('player', (receivedPlayer) => {
     }
 });
 
-
 chatInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         const message = chatInput.value.trim();
         if (message !== '' && player) {
-            socket.emit('chat message', `${player} ${message}`);
-            chatInput.value = '';
+            if (player === 'player1' && message.toLowerCase() !== word.toLowerCase() || player === 'player2') {
+                socket.emit('chat message', `${player} ${message}`);
+                chatInput.value = '';
+            }
+            
         } else {
             console.log('Le joueur est indéfini ou le message est vide.');
         }
     }
 });
+
 
 socket.on('chat message', (msg) => {
     const li = document.createElement('li');
@@ -58,3 +62,4 @@ socket.on('chat message', (msg) => {
 socket.on('Victoire', () => {
     alert('Victoire !');
 });
+
