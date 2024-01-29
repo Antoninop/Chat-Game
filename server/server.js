@@ -10,27 +10,43 @@ const io = socketIo(server);
 const publicPath = path.join(__dirname, '..', 'client');
 app.use(express.static(publicPath));
 
-let player1 = null;
-let player2 = null;
-
 const motsFrancais = ['chocolat', 'croissant', 'baguette', 'fromage', 'escargot', 'camembert', 'macaron', 'crepe', 'vin', 'boulangerie'];
-const motPartie = choisirMotFrancais();
+let motPartie = choisirMotFrancais();
+
 function choisirMotFrancais() {
     return motsFrancais[Math.floor(Math.random() * motsFrancais.length)];
 }
 
+let TourJoueur = 1;
+let player1 = null;
+let player2 = null;
+
 io.on('connection', (socket) => {
     console.log('Un utilisateur est connecté');
-    socket.on('chat message', (msg) => {
-        console.log('Message reçu : ' + msg);
-        io.emit('chat message', msg); 
 
-        if (msg.split(' ')[1].toLowerCase() === motPartie && msg.split(' ')[0] === 'player2') {
-            console.log('Victoire');
-            io.emit('Victoire', msg);
+    // Gestion de l'événement de réception de messages
+    socket.on('chat message', (msg) => {
+        if (msg.split(' ')[0] === 'player1' && TourJoueur === 1 && player1 === socket){
+            console.log('Message reçu : ' + msg);
+            io.emit('chat message', msg); 
+            TourJoueur = 2;
+
+        } else if (msg.split(' ')[0] === 'player2' && TourJoueur === 2 && player2 === socket) {
+            console.log('Message reçu : ' + msg);
+            io.emit('chat message', msg); 
+            TourJoueur = 1;
+
+            if (msg.split(' ')[1].toLowerCase() === motPartie && msg.split(' ')[0] === 'player2') {
+                console.log('Victoire');
+                io.emit('Victoire', msg);
+            }
+
+        } else {
+            console.log('Ce n\'est pas votre tour ou vous n\'êtes pas autorisé à jouer.');
         }
     });
 
+    // Gestion de l'événement de déconnexion
     socket.on('disconnect', () => {
         console.log('Utilisateur déconnecté');
         if (socket === player1) {
@@ -42,6 +58,7 @@ io.on('connection', (socket) => {
         }
     });
 
+    // Attribution des joueurs
     if (!player1) {
         player1 = socket;
         console.log('Joueur 1 assigné');
