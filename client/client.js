@@ -15,11 +15,13 @@ socket.on('player', (receivedPlayer) => {
             socket.on('word', (receivedWord) => { 
                 word = receivedWord; 
                 playerStatus.textContent = 'Mot à faire deviner : ' + word;
+                console.log('Mot à faire deviner : ' + word);
             });
         }
 
         if (receivedPlayer === 'player2') {
-            playerStatus.textContent += ' - Devinez le mot du joueur 1' ;
+            playerStatus.textContent += ' - Devinez le mot du joueur 1';
+            chatInput.disabled = true; 
         }
 
     } else {
@@ -30,6 +32,18 @@ socket.on('player', (receivedPlayer) => {
     }
 });
 
+
+socket.on('tour', (play) => {
+    if ((play === 'player1' && player !== 'player1') || (play === 'player2' && player !== 'player2')) {
+        chatInput.disabled = true;
+        console.log("input activé");
+    } else {
+        chatInput.disabled = false;
+        console.log( "input désactivé");
+    }
+});
+
+
 chatInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         const message = chatInput.value.trim();
@@ -38,7 +52,6 @@ chatInput.addEventListener('keypress', (e) => {
                 socket.emit('chat message', `${player} ${message}`);
                 chatInput.value = '';
             }
-            
         } else {
             console.log('Le joueur est indéfini ou le message est vide.');
         }
@@ -62,4 +75,5 @@ socket.on('chat message', (msg) => {
 socket.on('Victoire', () => {
     alert('Victoire !');
 });
+
 

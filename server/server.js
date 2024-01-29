@@ -23,29 +23,39 @@ let player2 = null;
 
 io.on('connection', (socket) => {
     console.log('Un utilisateur est connecté');
-
-    // Gestion de l'événement de réception de messages
+    
     socket.on('chat message', (msg) => {
-        if (msg.split(' ')[0] === 'player1' && TourJoueur === 1 && player1 === socket){
+        const [player, messageWord] = msg.split(' ');
+    
+        if (player === 'player1' && TourJoueur === 1 && player1 === socket) {
             console.log('Message reçu : ' + msg);
-            io.emit('chat message', msg); 
-            TourJoueur = 2;
-
-        } else if (msg.split(' ')[0] === 'player2' && TourJoueur === 2 && player2 === socket) {
+            const wordToCheck = messageWord.toLowerCase();
+    
+            if (wordExistsInFile(wordToCheck)) {
+                io.emit('chat message', msg); 
+                TourJoueur = 2;
+                io.emit('tour', 'player2');
+            }
+        } else if (player === 'player2' && TourJoueur === 2 && player2 === socket) {
             console.log('Message reçu : ' + msg);
-            io.emit('chat message', msg); 
-            TourJoueur = 1;
-
-            if (msg.split(' ')[1].toLowerCase() === motPartie && msg.split(' ')[0] === 'player2') {
+            const wordToCheck = messageWord.toLowerCase();
+    
+            if (wordExistsInFile(wordToCheck)) {
+                io.emit('chat message', msg); 
+                TourJoueur = 2;
+                io.emit('tour', 'player2');
+            }
+    
+            if (wordToCheck.includes(motPartie) && player === 'player2') {
                 console.log('Victoire');
                 io.emit('Victoire', msg);
             }
-
         } else {
             console.log('Ce n\'est pas votre tour ou vous n\'êtes pas autorisé à jouer.');
         }
     });
-
+    
+    
     // Gestion de l'événement de déconnexion
     socket.on('disconnect', () => {
         console.log('Utilisateur déconnecté');
@@ -69,6 +79,7 @@ io.on('connection', (socket) => {
         player2 = socket;
         console.log('Joueur 2 assigné');
         socket.emit('player', 'player2');
+
     } else {
         console.log('Trop de joueurs, redirection ou message d\'erreur...');
         socket.emit('message', 'Désolé, la partie est déjà pleine. Veuillez réessayer plus tard.');
@@ -80,3 +91,28 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Serveur en écoute sur le port ${PORT}`);
 });
+
+
+const fs = require('fs');
+
+function wordExistsInFile(word) {
+    try {
+        const data = fs.readFileSync('mots.txt', 'utf8');
+        const lines = data.split('\n');
+        
+        const lowercaseWord = word.toLowerCase();
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim().toLowerCase(); 
+            
+            if (line === lowercaseWord) {
+                return true; 
+            }
+        }        
+        return false;
+    } catch (err) {
+        console.error("Error reading file:", err);
+        return false;
+    }
+}
+
