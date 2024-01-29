@@ -36,14 +36,15 @@ io.on('connection', (socket) => {
                 TourJoueur = 2;
                 io.emit('tour', 'player2');
             }
+
         } else if (player === 'player2' && TourJoueur === 2 && player2 === socket) {
             console.log('Message reçu : ' + msg);
             const wordToCheck = messageWord.toLowerCase();
     
             if (wordExistsInFile(wordToCheck)) {
                 io.emit('chat message', msg); 
-                TourJoueur = 2;
-                io.emit('tour', 'player2');
+                TourJoueur = 1; // Mettre à jour le tour pour le joueur 1 après que le joueur 2 a joué
+                io.emit('tour', 'player1');
             }
     
             if (wordToCheck.includes(motPartie) && player === 'player2') {
@@ -54,7 +55,6 @@ io.on('connection', (socket) => {
             console.log('Ce n\'est pas votre tour ou vous n\'êtes pas autorisé à jouer.');
         }
     });
-    
     
     // Gestion de l'événement de déconnexion
     socket.on('disconnect', () => {
@@ -86,6 +86,7 @@ io.on('connection', (socket) => {
         socket.disconnect();
     }
 });
+
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
