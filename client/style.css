@@ -5,6 +5,10 @@ body {
     background-color: #f2f2f2;
 }
 
+html{
+    font-size: 12px;
+}
+
 #chat-messages {
     list-style-type: none;
     padding: 10px;
@@ -55,4 +59,85 @@ nav {
 
 input[type="text"][disabled] {
     cursor: not-allowed;
+}
+
+/* HERO SECTION */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    font-size: 12px;
+}
+
+.menu-container {
+    max-width: 50rem; /* 600px / 12px = 50rem */
+    margin: 3.125rem auto; /* 50px / 12px = 3.125rem */
+    text-align: center;
+}
+
+.menu-container h1 {
+    color: #333;
+}
+
+.menu-button {
+    padding: 0.833rem 1.667rem; /* 10px / 12px = 0.833rem, 20px / 12px = 1.667rem */
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 0.417rem; /* 5px / 12px = 0.417rem */
+    cursor: pointer;
+    margin-top: 1.667rem; /* 20px / 12px = 1.667rem */
+    transition: background-color 0.3s ease;
+}
+
+.menu-button:hover {
+    background-color: #0056b3;
+}
+
+.join-room input[type="text"] {
+    padding: 0.833rem;
+    margin-top: 0.833rem; /* 10px / 12px = 0.833rem */
+    width: 16.667rem; /* 200px / 12px = 16.667rem */
+    border-radius: 0.417rem;
+    border: 0.083rem solid #ccc; /* 1px / 12px = 0.083rem */
+}
+
+.room-container {
+    max-width: 50rem;
+    margin: 3.125rem auto; /* 50px / 12px = 3.125rem */
+    text-align: center;
+    display: none;
+}
+
+.room-container h1 {
+    color: #333;
+    margin-top: 10rem;
+}
+
+.room-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f9f9f9;
+    padding: 1.667rem;
+    border-radius: 0.417rem;
+    margin-top: 1.667rem;
+    box-shadow: 0 0 0.833rem rgba(0, 0, 0, 0.1);
+}
+
+.room-link p {
+    color: #666;
+    margin: 0;
+}
+
+.copy-button {
+    padding: 0.625rem 1rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 0.417rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }

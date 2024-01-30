@@ -6,6 +6,11 @@ const playerStatus = document.getElementById('player-status');
 let player;
 let word; 
 
+createRoomButton.addEventListener("click", function () {
+    socket.emit('create-room');
+});
+
+
 socket.on('player', (receivedPlayer) => {
     if (receivedPlayer === 'player1' || receivedPlayer === 'player2') {
         player = receivedPlayer;

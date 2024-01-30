@@ -23,6 +23,27 @@ let player2 = null;
 
 io.on('connection', (socket) => {
     console.log('Un utilisateur est connecté');
+
+
+    socket.on('create-room', () => {
+        console.log('Création d\'une salle');
+        const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase(); 
+        console.log('Code de salle généré : ' + roomCode);
+        rooms[roomCode] = { players: [socket.id], motPartie: choisirMotFrancais() }; 
+        socket.join(roomCode); 
+        socket.emit('room-created', roomCode); 
+    });
+
+    socket.on('join-room', (roomCode) => {
+        if (rooms[roomCode] && rooms[roomCode].players.length < 2) { 
+            rooms[roomCode].players.push(socket.id); 
+            socket.join(roomCode); 
+            io.to(roomCode).emit('room-joined', roomCode); 
+        } else {
+            socket.emit('room-error', 'La salle est pleine ou n\'existe pas'); 
+        }
+    });
+
     
     socket.on('chat message', (msg) => {
         const [player, messageWord] = msg.split(' ');
@@ -32,9 +53,9 @@ io.on('connection', (socket) => {
             const wordToCheck = messageWord.toLowerCase();
     
             if (wordExistsInFile(wordToCheck)) {
-                io.emit('chat message', msg); 
+                io.to(roomCode).emit('chat message', msg); 
                 TourJoueur = 2;
-                io.emit('tour', 'player2');
+                io.to(roomCode).emit('tour', 'player2');
             }
 
         } else if (player === 'player2' && TourJoueur === 2 && player2 === socket) {
@@ -42,14 +63,14 @@ io.on('connection', (socket) => {
             const wordToCheck = messageWord.toLowerCase();
     
             if (wordExistsInFile(wordToCheck)) {
-                io.emit('chat message', msg); 
-                TourJoueur = 1; // Mettre à jour le tour pour le joueur 1 après que le joueur 2 a joué
-                io.emit('tour', 'player1');
+                io.to(roomCode).emit('chat message', msg); 
+                TourJoueur = 1; 
+                io.to(roomCode).emit('tour', 'player1');
             }
     
             if (wordToCheck.includes(motPartie) && player === 'player2') {
                 console.log('Victoire');
-                io.emit('Victoire', msg);
+                io.to(roomCode).emit('Victoire', msg);
             }
         } else {
             console.log('Ce n\'est pas votre tour ou vous n\'êtes pas autorisé à jouer.');

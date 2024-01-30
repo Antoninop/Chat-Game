@@ -3,15 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Chat App</title>
+    <title>Menu de jeu</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav><div id="player-status" class="player-status"></div></nav>
-    <ul id="chat-messages"></ul>
-    <input type="text" id="chat-input" placeholder="Ecrire son message ici">
-    <script src="/socket.io/socket.io.js"></script>
-    <script src=/client.js></script>
+    <div class="menu-container" id="menu-container">
+        <h1>Menu de jeu</h1>
+        <button class="menu-button" id="create-room-button">Créer une salle</button>
+        <div class="join-room">
+            <input type="text" placeholder="ID de la salle">
+            <button class="menu-button">Rejoindre une salle</button>
+        </div>
+    </div>
 
+    <div class="room-container" id="room-container" style="display: none;">
+        <button class="menu-button" id="cancel-button">Annuler</button>
+        <h1>Invitez un ami</h1>
+        <div class="room-link">
+            <p>Texte 3</p>
+            <button class="copy-button" onclick="copyRoomLink()">Copier</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const menuContainer = document.getElementById("menu-container");
+            const roomContainer = document.getElementById("room-container");
+            const createRoomButton = document.getElementById("create-room-button");
+            const cancelButton = document.getElementById("cancel-button");
+
+            createRoomButton.addEventListener("click", function () {
+                menuContainer.style.display = "none";
+                roomContainer.style.display = "block";
+            });
+
+            cancelButton.addEventListener("click", function () {
+                menuContainer.style.display = "block";
+                roomContainer.style.display = "none";
+            });
+        });
+
+        function copyRoomLink() {
+        var roomLinkText = document.querySelector('.room-link p').innerText;
+        
+        var tempTextArea = document.createElement('textarea');
+        tempTextArea.value = roomLinkText;
+        document.body.appendChild(tempTextArea);
+        tempTextArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempTextArea);
+
+        alert('Texte copié : ' + roomLinkText);
+}
+
+    </script>
+    <script src=client.js></script>
 </body>
 </html>
