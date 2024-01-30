@@ -59,21 +59,35 @@ chatInput.addEventListener('keypress', (e) => {
 });
 
 
-socket.on('chat message', (msg) => {
-    const li = document.createElement('li');
+document.addEventListener('DOMContentLoaded', () => {
+    const savedMessages = localStorage.getItem('chatMessages');
+    if (savedMessages) {
+        chatMessages.innerHTML = savedMessages;
+    }
+});
 
-    if (msg.startsWith(player)) {
-        li.textContent = `(vous) ${msg.slice(player.length + 1)}`;
+function sauvegarderMessage(message) {
+    const li = document.createElement('li');
+    if (message.startsWith(player)) {
+        li.textContent = `(vous) ${message.slice(player.length + 1)}`;
     } else {
-        li.textContent = msg;
+        li.textContent = message;
     }
     chatMessages.appendChild(li);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    localStorage.setItem('chatMessages', chatMessages.innerHTML);
+}
+
+socket.on('chat message', (msg) => {
+    sauvegarderMessage(msg);
 });
 
 
 socket.on('Victoire', () => {
     alert('Victoire !');
+    localStorage.removeItem('chatMessages');
+
 });
 
 
